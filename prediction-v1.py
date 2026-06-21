@@ -376,13 +376,13 @@ def predict_match(team_a: str, team_b: str):
 
     print(f"\n{'='*62}")
     for team, prob in [(team_a, prob_a_norm), (team_b, prob_b_norm)]:
-        bar = "█" * int(prob / 100 * 40)
+        bar = "*" * int(prob / 100 * 40)
         print(f"  {team:<20} {prob:5.1f}%  {bar}")
     print(f"{'='*62}")
     winner = team_a if prob_a_norm > prob_b_norm else team_b
     print(f"\n  PREDICTED WINNER: {winner} ({max(prob_a_norm, prob_b_norm)}%)\n")
 
 # ── RUN ───────────────────────────────────────────────────────
-predict_match("Australia", "Turkey")
 print()
 predict_match("Australia", "USA")
+
