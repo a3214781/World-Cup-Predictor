@@ -1,8 +1,6 @@
-# KGAT_b4bb4a3970b94af8d610d313c5b047aa
-# python3 prediction-v2.py
-
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 data = pd.read_csv("/Users/alessiofantasia/prediction-wc/data/results.csv", parse_dates=[0])
 
@@ -37,7 +35,7 @@ def form(data, match_date, team, num_games=5):
     # Filters data for specific team
     data = data[(data['home_team'] == team) | (data['away_team'] == team)]
     # Filters to only show games that happened BEFORE the current match date
-    data = data[data['date'] < row['date']]
+    data = data[data['date'] < match_date]
     
     data = data.tail(num_games)
     
@@ -51,10 +49,44 @@ data["away_team_form"] = "0"
 for match_date, row in data.iterrows():
     data.at[match_date, 'home_team_form'] = form(data, row['date'], row['home_team'] , num_games=5)
     data.at[match_date, 'away_team_form'] =  form(data, row['date'], row['away_team'] , num_games=5)
-
+#delets all NaN data
 data = data.dropna(subset=['home_team_form', 'away_team_form'])
-print(len(data) )
-print(data[['home_team', 'away_team', 'home_team_form', 'away_team_form']].head(20))
+
+# finds wich teams won adn converts boolean to binary
+data['target'] = (data['winner'] == data['home_team']).astype(int)
+
+# defining X and Y for the Binomial Regression
+
+X = data[['home_team_form', 'away_team_form']]
+Y = data['target']
+
+# using the train test split function
+X_train, X_test, y_train, y_test = train_test_split(
+  X,Y , random_state=104,test_size=0.25, shuffle=True)
+
+# printing out train and test sets
+
+print('X_train : ')
+print(X_train.head())
+print(X_train.shape)
+
+print('')
+print('X_test : ')
+print(X_test.head())
+print(X_test.shape)
+
+print('')
+print('y_train : ')
+print(y_train.head())
+print(y_train.shape)
+
+print('')
+print('y_test : ')
+print(y_test.head())
+print(y_test.shape)
+
+# print(len(data))
+# print(data[['home_team', 'away_team', 'home_team_form', 'away_team_form']].head(20))
 
 
 
@@ -65,3 +97,5 @@ print(data[['home_team', 'away_team', 'home_team_form', 'away_team_form']].head(
 # 100% Accuracy (18/18) - Pure Binary
 # Accuracy (18/26) - Real World Realism Mode (Cant predict draws)
 # python3 prediction-v2.py
+
+# KGAT_b4bb4a3970b94af8d610d313c5b047aa
