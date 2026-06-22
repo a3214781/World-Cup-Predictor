@@ -1,16 +1,18 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import metrics
 
+# Gathering results.csv as a variable data
 data = pd.read_csv("/Users/alessiofantasia/prediction-wc/data/results.csv", parse_dates=[0])
 
 # filter out all friendly matches
 data = data[data['tournament'] != 'Friendly']
 data = data.dropna(subset=['home_score', 'away_score'])
 data = data[data['date'] >= '2010-01-01']
-
-
-# np.where(condition, value_if_true, value_if_false)
 
 conditions = [
     data['home_score'] > data['away_score'],  # Home win
@@ -24,78 +26,83 @@ choices = [
     'Draw'              # Result if condition 3 is True
 ]
 
-# Create 'winner' column
+# Create 'winner' column using np.select
 winner = np.select(conditions, choices)
 data['winner'] = winner
 
 # Dropping all draws from datased for binary regression (win or lose)
 data = data[data['winner'] != 'Draw']
 
-def form(data, match_date, team, num_games=5):
-    # Filters data for specific team
-    data = data[(data['home_team'] == team) | (data['away_team'] == team)]
-    # Filters to only show games that happened BEFORE the current match date
-    data = data[data['date'] < match_date]
-    
-    data = data.tail(num_games)
-    
-    win_rate = (data['winner'] == team).sum() / len(data)
-    
-    return win_rate
+# Create a row for each team's participation in each match
+home = data[['date', 'home_team', 'winner']].copy()
+home.columns = ['date', 'team', 'winner']
+home['win'] = (home['winner'] == home['team']).astype(int)
 
-data["home_team_form"] = "0"
-data["away_team_form"] = "0"
+# Same for away teams
+away = data[['date', 'away_team', 'winner']].copy()
+away.columns = ['date', 'team', 'winner']
+away['win'] = (away['winner'] == away['team']).astype(int)
 
-for match_date, row in data.iterrows():
-    data.at[match_date, 'home_team_form'] = form(data, row['date'], row['home_team'] , num_games=5)
-    data.at[match_date, 'away_team_form'] =  form(data, row['date'], row['away_team'] , num_games=5)
-#delets all NaN data
-data = data.dropna(subset=['home_team_form', 'away_team_form'])
+# Combine and sort by date
+team_results = pd.concat([home, away]).sort_values('date').reset_index(drop=True)
 
-# finds wich teams won adn converts boolean to binary
-data['target'] = (data['winner'] == data['home_team']).astype(int)
+team_results['form'] = team_results.groupby('team')['win'].rolling(5).mean().shift(1).values
+
+# print(team_results.head(20)) 
+
+# Merge home team form onto main dataframe
+home_team_form = pd.merge(data, team_results, left_on=['date', 'home_team'], right_on=['date', 'team']).rename(columns={'form': 'home_team_form'})
+away_team_form = pd.merge(data, team_results, left_on=['date', 'away_team'], right_on=['date', 'team']).rename(columns={'form': 'away_team_form'})
+
+# New dataframe with date, home_team, away_team, winner merging both forms
+data_final = pd.merge(home_team_form, away_team_form, on=['date', 'home_team', 'away_team', 'winner_x'])
+data_final = data_final.dropna(subset=['home_team_form', 'away_team_form'])
+
+# finds wich teams won and converts boolean to binary
+data_final['target'] = (data_final['winner_x'] == data_final['home_team']).astype(int)
+
+print(data_final['target'].value_counts())
 
 # defining X and Y for the Binomial Regression
-
-X = data[['home_team_form', 'away_team_form']]
-Y = data['target']
+X = data_final[['home_team_form', 'away_team_form']]
+Y = data_final['target']
 
 # using the train test split function
 X_train, X_test, y_train, y_test = train_test_split(
-  X,Y , random_state=104,test_size=0.25, shuffle=True)
+  X,Y ,random_state=42, test_size=0.25, shuffle=True)
 
-# printing out train and test sets
+# instantiate the model (using the default parameters)
+logreg = LogisticRegression(random_state=16, class_weight='balanced')
 
-print('X_train : ')
-print(X_train.head())
-print(X_train.shape)
+# fit the model with data
+logreg.fit(X_train, y_train)
+y_pred = logreg.predict(X_test)
 
-print('')
-print('X_test : ')
-print(X_test.head())
-print(X_test.shape)
+cnf_matrix = metrics.confusion_matrix(y_test, y_pred)
+cnf_matrix
 
-print('')
-print('y_train : ')
-print(y_train.head())
-print(y_train.shape)
+class_names=[0,1] # name  of classes
+fig, ax = plt.subplots()
+tick_marks = np.arange(len(class_names))
+plt.xticks(tick_marks, class_names)
+plt.yticks(tick_marks, class_names)
+# create heatmap
+sns.heatmap(pd.DataFrame(cnf_matrix), annot=True, cmap="YlGnBu" ,fmt='g')
+ax.xaxis.set_label_position("top")
+plt.tight_layout()
+plt.title('Confusion matrix', y=1.1)
+plt.ylabel('Actual label')
+plt.xlabel('Predicted label')
 
-print('')
-print('y_test : ')
-print(y_test.head())
-print(y_test.shape)
+plt.show()
+
+print(metrics.accuracy_score(y_test, y_pred))
+
+
 
 # print(len(data))
 # print(data[['home_team', 'away_team', 'home_team_form', 'away_team_form']].head(20))
 
-
-
   
-# What Info I Have
-# Form/ Team Coming into the game
-# Result (17 games into world cup)
-# 100% Accuracy (18/18) - Pure Binary
-# Accuracy (18/26) - Real World Realism Mode (Cant predict draws)
 # python3 prediction-v2.py
-
 # KGAT_b4bb4a3970b94af8d610d313c5b047aa
