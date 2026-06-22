@@ -99,7 +99,6 @@ data_final['away_rank'] = data_final['away_rank']
 # finds wich teams won and converts boolean to binary
 data_final['target'] = (data_final['winner_x'] == data_final['home_team']).astype(int)
 
-
 # defining X and Y for the Binomial Regression
 X = data_final[['home_team_form', 'away_team_form', 'home_avg_goals_scored', 'away_avg_goals_scored', 'home_avg_goals_conceded', 'away_avg_goals_conceded', 'home_rank', 'away_rank', 'neutral']]
 Y = data_final['target']
@@ -123,6 +122,7 @@ y_pred = logreg.predict(X_test)
 cnf_matrix = metrics.confusion_matrix(y_test, y_pred)
 cnf_matrix
 
+'''
 class_names=[0,1] # name  of classes
 fig, ax = plt.subplots()
 tick_marks = np.arange(len(class_names))
@@ -138,7 +138,9 @@ plt.ylabel('Actual label')
 plt.xlabel('Predicted label')
 plt.show()
 
-print(metrics.accuracy_score(y_test, y_pred))
+'''
+
+print("Accuracy: ", metrics.accuracy_score(y_test, y_pred),"%")
 
 def predict_match(home_team, away_team, neutral=False):
     # Finding current teams most recent rank
