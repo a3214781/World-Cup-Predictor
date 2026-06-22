@@ -37,17 +37,28 @@ def form(data, match_date, team, num_games=5):
     # Filters data for specific team
     data = data[(data['home_team'] == team) | (data['away_team'] == team)]
     # Filters to only show games that happened BEFORE the current match date
-    data = data[data['date'] < match_date]
+    data = data[data['date'] < row['date']]
     
     data = data.tail(num_games)
     
     win_rate = (data['winner'] == team).sum() / len(data)
     
     return win_rate
-    
-    
-print(form(data, '2022-01-01', 'Australia', num_games=5))
 
+data["home_team_form"] = "0"
+data["away_team_form"] = "0"
+
+for match_date, row in data.iterrows():
+    data.at[match_date, 'home_team_form'] = form(data, row['date'], row['home_team'] , num_games=5)
+    data.at[match_date, 'away_team_form'] =  form(data, row['date'], row['away_team'] , num_games=5)
+
+data = data.dropna(subset=['home_team_form', 'away_team_form'])
+print(len(data) )
+print(data[['home_team', 'away_team', 'home_team_form', 'away_team_form']].head(20))
+
+
+
+  
 # What Info I Have
 # Form/ Team Coming into the game
 # Result (17 games into world cup)
