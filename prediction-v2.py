@@ -33,52 +33,24 @@ data['winner'] = winner
 # Dropping all draws from datased for binary regression (win or lose)
 data = data[data['winner'] != 'Draw']
 
-# 2. THE CHROME-PLATED FORM EXTRACTOR FUNCTION
-def get_team_form(df, current_idx, team, num_games=5):
-    """Looks backward from current_idx to find the last 5 game outcomes for a team"""
-    # Grab all historical rows BEFORE this current game
-    past_games = df.iloc[:current_idx]
+def form(data, match_date, team, num_games=5):
+    # Filters data for specific team
+    data = data[(data['home_team'] == team) | (data['away_team'] == team)]
+    # Filters to only show games that happened BEFORE the current match date
+    data = data[data['date'] < match_date]
     
-    # Filter for games where our target team actually played
-    team_history = past_games[(past_games['home_team'] == team) | (past_games['away_team'] == team)]
+    data = data.tail(num_games)
     
-    # Get the last N games
-    last_games = team_history.tail(num_games)
+    win_rate = (data['winner'] == team).sum() / len(data)
     
-    # Map out Wins (W) and Losses (L)
-    form_list = []
-    for _, match in last_games.iterrows():
-        if match['winner'] == team:
-            form_list.append('W')
-        else:
-            form_list.append('L') # No draws exist in your dataset anymore!
-            
-    # Join into a string like "WWLLW". Pad with 'N' if they haven't played 5 games yet
-    form_str = "".join(form_list)
-    return form_str.rjust(num_games, 'N') 
-
-
-# 3. GENERATE FORM FEATURES FOR THE WHOLE DATASET
-home_forms = []
-away_forms = []
-
-print("⚡ Calculating team forms... Hang tight!")
-for idx, row in data.iterrows():
-    home_forms.append(get_team_form(data, idx, row['home_team']))
-    away_forms.append(get_team_form(data, idx, row['away_team']))
-
-# Assign them as new columns to feed into your binary regression!
-data['home_form'] = home_forms
-data['away_form'] = away_forms
-
-
-# 4. PRINT A SNEAK PEEK OF YOUR BRAND NEW FEATURES
-print("\n🔥 SUCCESS! Check out your new model features:")
-print(data[['date', 'home_team', 'away_team', 'winner', 'home_form', 'away_form']].tail(10))
+    return win_rate
+    
+    
+print(form(data, '2022-01-01', 'Australia', num_games=5))
 
 # What Info I Have
 # Form/ Team Coming into the game
 # Result (17 games into world cup)
-# 100% Accuracy (17/17) - Pure Binary
-# 68.0% Accuracy (17/25) - Real World Realism Mode (Cant predict draws)
+# 100% Accuracy (18/18) - Pure Binary
+# Accuracy (18/26) - Real World Realism Mode (Cant predict draws)
 # python3 prediction-v2.py
