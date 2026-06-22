@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -6,6 +5,7 @@ from sklearn.linear_model import LogisticRegression
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import metrics
+from sklearn.preprocessing import StandardScaler
 
 # Gathering results.csv as a variable data
 data = pd.read_csv("/Users/alessiofantasia/prediction-wc/data/results.csv", parse_dates=[0])
@@ -88,23 +88,33 @@ away_team_form = pd.merge(data, team_results, left_on=['date', 'away_team'], rig
 # New dataframe with date, home_team, away_team, winner merging both forms
 data_final = pd.merge(home_team_form, away_team_form, on=['date', 'home_team', 'away_team', 'winner_x'])
 data_final = pd.merge(data_final, final_rankings, on=['date', 'home_team', 'away_team'])
+data_final = pd.merge(data_final, data[['date', 'home_team', 'away_team', 'neutral']], on=['date', 'home_team', 'away_team'], how='left')
+
+# Drop Null Values
 data_final = data_final.dropna(subset=['home_team_form', 'away_team_form', 'home_avg_goals_scored', 'away_avg_goals_scored', 'home_avg_goals_conceded', 'away_avg_goals_conceded', 'home_rank', 'away_rank'])
+
+data_final['home_rank'] = data_final['home_rank']
+data_final['away_rank'] = data_final['away_rank']
 
 # finds wich teams won and converts boolean to binary
 data_final['target'] = (data_final['winner_x'] == data_final['home_team']).astype(int)
 
-print(data_final['target'].value_counts())
 
 # defining X and Y for the Binomial Regression
-X = data_final[['home_team_form', 'away_team_form', 'home_avg_goals_scored', 'away_avg_goals_scored', 'home_avg_goals_conceded', 'away_avg_goals_conceded', 'home_rank', 'away_rank']]
+X = data_final[['home_team_form', 'away_team_form', 'home_avg_goals_scored', 'away_avg_goals_scored', 'home_avg_goals_conceded', 'away_avg_goals_conceded', 'home_rank', 'away_rank', 'neutral']]
 Y = data_final['target']
 
 # using the train test split function
 X_train, X_test, y_train, y_test = train_test_split(
   X,Y ,random_state=42, test_size=0.25, shuffle=True)
 
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
 # instantiate the model (using the default parameters)
 logreg = LogisticRegression(random_state=16)
+
 
 # fit the model with data
 logreg.fit(X_train, y_train)
@@ -118,21 +128,50 @@ fig, ax = plt.subplots()
 tick_marks = np.arange(len(class_names))
 plt.xticks(tick_marks, class_names)
 plt.yticks(tick_marks, class_names)
-# create heatmap
+
+# Create heatmap
 sns.heatmap(pd.DataFrame(cnf_matrix), annot=True, cmap="YlGnBu" ,fmt='g')
 ax.xaxis.set_label_position("top")
 plt.tight_layout()
 plt.title('Confusion matrix', y=1.1)
 plt.ylabel('Actual label')
 plt.xlabel('Predicted label')
-
 plt.show()
 
 print(metrics.accuracy_score(y_test, y_pred))
 
-# print(len(data))
-# print(data[['home_team', 'away_team', 'home_team_form', 'away_team_form']].head(20))
-
+def predict_match(home_team, away_team, neutral=False):
+    # Finding current teams most recent rank
+    home_rank = rankings[rankings['country_full'] == home_team].iloc[-1]['rank']
+    away_rank = rankings[rankings['country_full'] == away_team].iloc[-1]['rank']
+    
+    # Finding current teams 5 game running form
+    home_form = team_results[team_results['team'] == home_team].iloc[-1]['form']
+    away_form = team_results[team_results['team'] == away_team].iloc[-1]['form']
+    
+    # Finding goals conceded and scored off recent form
+    home_avg_conceded = team_results[team_results['team'] == home_team].iloc[-1]['avg_goals_conceded']
+    home_avg_scored = team_results[team_results['team'] == home_team].iloc[-1]['avg_goals_scored']
+    
+    away_avg_conceded = team_results[team_results['team'] == away_team].iloc[-1]['avg_goals_conceded']
+    away_avg_scored = team_results[team_results['team'] == away_team].iloc[-1]['avg_goals_scored']
+    
+    # Create a dataframe with all relevant statistices to help predict
+    match = pd.DataFrame([[home_form, away_form, home_avg_scored, away_avg_scored, home_avg_conceded, away_avg_conceded, home_rank, away_rank, int(neutral)]], 
+        columns=['home_team_form', 'away_team_form', 'home_avg_goals_scored', 'away_avg_goals_scored', 'home_avg_goals_conceded', 'away_avg_goals_conceded', 'home_rank', 'away_rank', 'neutral'])
+    
+    # Call logreg.predict_proba(match) to predict the match
+    match_scaled = scaler.transform(match)
+    probabilities = logreg.predict_proba(match_scaled)
+    
+    print(home_team, ' win probability: ', round(probabilities[0][1] * 100, 1), '%')
+    print(away_team, ' win probability: ', round(probabilities[0][0] * 100, 1), '%')
+    
+# Inputs to search home and away team
+home_team_input = input("Enter home team: ")
+away_team_input = input("Enter away team: ")
+neutral_input = input("Neutral ground? (y/n): ").lower() == 'y'
+predict_match(home_team_input, away_team_input, neutral_input)
   
 # python3 prediction-v4.py
 # KGAT_b4bb4a3970b94af8d610d313c5b047aa
