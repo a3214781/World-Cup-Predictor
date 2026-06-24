@@ -94,6 +94,30 @@ The jump from v3 to v4 confirms FIFA ranking is the strongest predictive signal 
 
 ---
 
+## 2026 World Cup Simulation
+ 
+Using the trained model, all 72 group stage matches were simulated to predict the full tournament outcome.
+ 
+| Stage | Predicted Result |
+|---|---|
+| Group Stage | 12 groups simulated (win/loss only, no draws) |
+| Third Place | Top 8 from 12 groups via total win probability tiebreaker |
+| Bracket | FIFA combination 259 (3rd place teams from groups A,C,D,E,G,I,J,K) |
+| Champion | 🇳🇱 **Netherlands** (def. 🏴󠁧󠁢󠁥󠁮󠁧󠁿 England 55.3% — 44.7%) |
+ 
+Full bracket and group tables exported to `wc2026_predictions.html`.
+ 
+**Simulation limitations:** draws excluded (binary win/loss only), bracket hardcoded for combination 259, does not account for tournament pressure or squad rotation.
+
+## Preview
+
+<p align="center">
+  <img src="screenshots/groups.png" width="48%">
+  <img src="screenshots/bracket.png" width="48%">
+</p>
+
+> Group stage & third place qualification (left) · Full knockout bracket to final (right)
+
 ## Requirements
 
 ```bash
