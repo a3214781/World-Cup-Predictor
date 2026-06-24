@@ -143,20 +143,24 @@ plt.show()
 print("Accuracy: ", metrics.accuracy_score(y_test, y_pred),"%")
 
 def predict_match(home_team, away_team, neutral=False):
+    
+    # Cleaning data before it gets analysed 
+    team_results_clean = team_results.dropna(subset=['form', 'avg_goals_scored', 'avg_goals_conceded'])
+
     # Finding current teams most recent rank
     home_rank = rankings[rankings['country_full'] == home_team].iloc[-1]['rank']
     away_rank = rankings[rankings['country_full'] == away_team].iloc[-1]['rank']
     
     # Finding current teams 5 game running form
-    home_form = team_results[team_results['team'] == home_team].iloc[-1]['form']
-    away_form = team_results[team_results['team'] == away_team].iloc[-1]['form']
+    home_form = team_results_clean[team_results_clean['team'] == home_team].iloc[-1]['form']
+    away_form = team_results_clean[team_results_clean['team'] == away_team].iloc[-1]['form']
     
     # Finding goals conceded and scored off recent form
-    home_avg_conceded = team_results[team_results['team'] == home_team].iloc[-1]['avg_goals_conceded']
-    home_avg_scored = team_results[team_results['team'] == home_team].iloc[-1]['avg_goals_scored']
+    home_avg_conceded = team_results_clean[team_results_clean['team'] == home_team].iloc[-1]['avg_goals_conceded']
+    home_avg_scored = team_results_clean[team_results_clean['team'] == home_team].iloc[-1]['avg_goals_scored']
     
-    away_avg_conceded = team_results[team_results['team'] == away_team].iloc[-1]['avg_goals_conceded']
-    away_avg_scored = team_results[team_results['team'] == away_team].iloc[-1]['avg_goals_scored']
+    away_avg_conceded = team_results_clean[team_results_clean['team'] == away_team].iloc[-1]['avg_goals_conceded']
+    away_avg_scored = team_results_clean[team_results_clean['team'] == away_team].iloc[-1]['avg_goals_scored']
     
     # Create a dataframe with all relevant statistices to help predict
     match = pd.DataFrame([[home_form, away_form, home_avg_scored, away_avg_scored, home_avg_conceded, away_avg_conceded, home_rank, away_rank, int(neutral)]], 
