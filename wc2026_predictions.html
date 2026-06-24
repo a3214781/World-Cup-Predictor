@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>World Cup 2026 — AI Simulation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0c0c0c; color: #e8e8e8; font-family: Inter, Arial, sans-serif; }
+
+/* HERO */
+.hero { border-bottom: 3px solid #f97316; padding: 60px 30px; text-align: center; }
+.hero h1 { font-size: 3.2rem; font-weight: 900; color: #fff; letter-spacing: -1px; }
+.hero h1 span { color: #f97316; }
+.hero p { color: #888; margin-top: 10px; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; }
+.badge { display: inline-block; background: #f97316; color: #000; font-weight: 700; font-size: 0.8rem; padding: 4px 14px; border-radius: 4px; margin-top: 14px; letter-spacing: 1px; }
+
+/* LAYOUT */
+.container { max-width: 1300px; margin: 0 auto; padding: 50px 25px; }
+.section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #f97316; margin-bottom: 16px; }
+h2 { font-size: 1.6rem; font-weight: 800; color: #fff; margin-bottom: 24px; }
+
+/* GROUPS */
+.groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; margin-bottom: 60px; }
+.group { background: #151515; border: 1px solid #222; border-radius: 8px; overflow: hidden; }
+.group-header { background: #f97316; color: #000; font-weight: 800; font-size: 0.78rem; letter-spacing: 2px; padding: 8px 14px; text-transform: uppercase; }
+.team-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid #1e1e1e; font-size: 0.85rem; }
+.team-row:last-child { border-bottom: none; }
+.team-row.p1 { color: #fff; font-weight: 700; }
+.team-row.p2 { color: #ccc; }
+.team-row.p3 { color: #666; }
+.team-row.p4 { color: #444; }
+.pts { color: #f97316; font-weight: 600; font-size: 0.8rem; }
+
+/* THIRD PLACE */
+.third-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 60px; }
+.third-card { background: #151515; border: 1px solid #222; border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+.third-card.through { border-color: #f97316; }
+.third-rank { color: #f97316; font-weight: 700; font-size: 0.75rem; margin-right: 8px; }
+.third-prob { color: #666; font-size: 0.78rem; }
+
+/* BRACKET */
+.bracket-scroll { overflow-x: auto; }
+table.bracket { border-collapse: collapse; width: 100%; min-width: 1000px; }
+table.bracket th { background: #151515; color: #f97316; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; padding: 12px 16px; border: 1px solid #222; text-align: left; font-weight: 700; }
+table.bracket td { border: 1px solid #1e1e1e; padding: 14px 16px; vertical-align: middle; background: #111; min-width: 155px; }
+.mw { color: #fff; font-weight: 700; font-size: 0.88rem; display: block; }
+.ml { color: #3a3a3a; font-size: 0.85rem; display: block; text-decoration: line-through; }
+.mp { color: #555; font-size: 0.75rem; display: block; margin-top: 4px; }
+.final-col { background: #1a0f00 !important; border: 1px solid #f97316 !important; }
+.champ-col { background: #f97316 !important; border: 2px solid #f97316 !important; text-align: center; }
+.champ-col span { display: block; color: #000; font-weight: 900; font-size: 1rem; }
+.champ-col .trophy { font-size: 1.6rem; margin-bottom: 4px; }
+
+/* FINAL HERO */
+.final-section { margin-top: 60px; border: 2px solid #f97316; border-radius: 10px; padding: 50px 30px; text-align: center; background: #0f0800; }
+.final-section .big-trophy { font-size: 5rem; }
+.final-section h3 { font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #f97316; margin: 16px 0 8px; }
+.final-section h2 { font-size: 3rem; color: #fff; font-weight: 900; }
+.final-section p { color: #666; font-size: 0.85rem; margin-top: 8px; }
+
+hr.divider { border: none; border-top: 1px solid #1e1e1e; margin: 50px 0; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>World Cup 2026 <span>AI Simulation</span></h1>
+  <p>Machine Learning Tournament Prediction · 76.5% Model Accuracy</p>
+  <span class="badge">Logistic Regression · FIFA Rankings · Rolling Form</span>
+</div>
+
+<div class="container">
+
+  <!-- GROUPS -->
+  <div class="section-label">Group Stage</div>
+  <h2>All 12 Groups</h2>
+  <div class="groups">
+
+    <div class="group"><div class="group-header">Group A</div>
+      <div class="team-row p1"><span>🇲🇽 Mexico</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇰🇷 South Korea</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇨🇿 Czechia</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇿🇦 South Africa</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group B</div>
+      <div class="team-row p1"><span>🇨🇭 Switzerland</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇨🇦 Canada</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇶🇦 Qatar</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇧🇦 Bosnia &amp; Herz.</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group C</div>
+      <div class="team-row p1"><span>🇧🇷 Brazil</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇲🇦 Morocco</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇭🇹 Haiti</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group D</div>
+      <div class="team-row p1"><span>🇺🇸 United States</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇦🇺 Australia</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇵🇾 Paraguay</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇹🇷 Turkey</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group E</div>
+      <div class="team-row p1"><span>🇩🇪 Germany</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇪🇨 Ecuador</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇨🇮 Ivory Coast</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇨🇼 Curaçao</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group F</div>
+      <div class="team-row p1"><span>🇳🇱 Netherlands</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇯🇵 Japan</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇸🇪 Sweden</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇹🇳 Tunisia</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group G</div>
+      <div class="team-row p1"><span>🇧🇪 Belgium</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇮🇷 Iran</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇪🇬 Egypt</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇳🇿 New Zealand</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group H</div>
+      <div class="team-row p1"><span>🇪🇸 Spain</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇺🇾 Uruguay</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇸🇦 Saudi Arabia</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇨🇻 Cape Verde</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group I</div>
+      <div class="team-row p1"><span>🇫🇷 France</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇸🇳 Senegal</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇳🇴 Norway</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇮🇶 Iraq</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group J</div>
+      <div class="team-row p1"><span>🇦🇷 Argentina</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇩🇿 Algeria</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇦🇹 Austria</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇯🇴 Jordan</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group K</div>
+      <div class="team-row p1"><span>🇵🇹 Portugal</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇨🇴 Colombia</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇺🇿 Uzbekistan</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇨🇩 DR Congo</span><span class="pts">0</span></div>
+    </div>
+
+    <div class="group"><div class="group-header">Group L</div>
+      <div class="team-row p1"><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span><span class="pts">9</span></div>
+      <div class="team-row p2"><span>🇭🇷 Croatia</span><span class="pts">6</span></div>
+      <div class="team-row p3"><span>🇵🇦 Panama</span><span class="pts">3</span></div>
+      <div class="team-row p4"><span>🇬🇭 Ghana</span><span class="pts">0</span></div>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <!-- THIRD PLACE -->
+  <div class="section-label">Third Place Qualification</div>
+  <h2>Top 8 Third Place Teams</h2>
+  <div class="third-grid">
+    <div class="third-card through"><span><span class="third-rank">1</span>🇪🇬 Egypt</span><span class="third-prob">169.1%</span></div>
+    <div class="third-card through"><span><span class="third-rank">2</span>🇦🇹 Austria</span><span class="third-prob">162.9%</span></div>
+    <div class="third-card through"><span><span class="third-rank">3</span>🇨🇮 Ivory Coast</span><span class="third-prob">149.7%</span></div>
+    <div class="third-card through"><span><span class="third-rank">4</span>🇳🇴 Norway</span><span class="third-prob">149.6%</span></div>
+    <div class="third-card through"><span><span class="third-rank">5</span>🇺🇿 Uzbekistan</span><span class="third-prob">135.1%</span></div>
+    <div class="third-card through"><span><span class="third-rank">6</span>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</span><span class="third-prob">131.5%</span></div>
+    <div class="third-card through"><span><span class="third-rank">7</span>🇵🇾 Paraguay</span><span class="third-prob">128.1%</span></div>
+    <div class="third-card through"><span><span class="third-rank">8</span>🇨🇿 Czechia</span><span class="third-prob">118.3%</span></div>
+    <div class="third-card"><span><span class="third-rank">9</span>🇸🇪 Sweden</span><span class="third-prob">111.2%</span></div>
+    <div class="third-card"><span><span class="third-rank">10</span>🇵🇦 Panama</span><span class="third-prob">104.8%</span></div>
+    <div class="third-card"><span><span class="third-rank">11</span>🇶🇦 Qatar</span><span class="third-prob">98.3%</span></div>
+    <div class="third-card"><span><span class="third-rank">12</span>🇸🇦 Saudi Arabia</span><span class="third-prob">91.7%</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- BRACKET -->
+  <div class="section-label">Knockout Stage</div>
+  <h2>Tournament Bracket — Combination 259</h2>
+  <div class="bracket-scroll">
+  <table class="bracket">
+    <thead>
+      <tr>
+        <th>Round of 32</th>
+        <th>Round of 16</th>
+        <th>Quarter Finals</th>
+        <th>Semi Finals</th>
+        <th>🏆 Final</th>
+        <th>Champion</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="mw">🇰🇷 South Korea</span><span class="ml">🇨🇦 Canada</span><span class="mp">56.2% — 43.8%</span></td>
+        <td rowspan="2"><span class="ml">🇰🇷 South Korea</span><span class="mw">🇧🇷 Brazil</span><span class="mp">41.4% — 58.6%</span></td>
+        <td rowspan="4"><span class="mw">🇳🇱 Netherlands</span><span class="ml">🇧🇷 Brazil</span><span class="mp">52.7% — 47.3%</span></td>
+        <td rowspan="8"><span class="mw">🇳🇱 Netherlands</span><span class="ml">🇪🇸 Spain</span><span class="mp">56.7% — 43.3%</span></td>
+        <td rowspan="16" class="final-col"><span class="mw">🇳🇱 Netherlands</span><span class="ml">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span><span class="mp">55.3% — 44.7%</span></td>
+        <td rowspan="16" class="champ-col"><span class="trophy">🏆</span><span>🇳🇱 Netherlands</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇧🇷 Brazil</span><span class="ml">🇯🇵 Japan</span><span class="mp">58.4% — 41.6%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇳🇱 Netherlands</span><span class="ml">🇲🇦 Morocco</span><span class="mp">57.4% — 42.6%</span></td>
+        <td rowspan="2"><span class="mw">🇳🇱 Netherlands</span><span class="ml">🇸🇳 Senegal</span><span class="mp">66.0% — 34.0%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇸🇳 Senegal</span><span class="ml">🇪🇨 Ecuador</span><span class="mp">55.5% — 44.5%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇨🇴 Colombia</span><span class="ml">🇭🇷 Croatia</span><span class="mp">53.1% — 46.9%</span></td>
+        <td rowspan="2"><span class="mw">🇪🇸 Spain</span><span class="ml">🇨🇴 Colombia</span><span class="mp">54.1% — 45.9%</span></td>
+        <td rowspan="4"><span class="mw">🇪🇸 Spain</span><span class="ml">🇦🇷 Argentina</span><span class="mp">53.3% — 46.7%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇪🇸 Spain</span><span class="ml">🇩🇿 Algeria</span><span class="mp">69.5% — 30.5%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇦🇷 Argentina</span><span class="ml">🇺🇾 Uruguay</span><span class="mp">66.4% — 33.6%</span></td>
+        <td rowspan="2"><span class="mw">🇦🇷 Argentina</span><span class="ml">🇦🇺 Australia</span><span class="mp">71.1% — 28.9%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇦🇺 Australia</span><span class="ml">🇮🇷 Iran</span><span class="mp">50.0% — 50.0%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇲🇽 Mexico</span><span class="ml">🇨🇮 Ivory Coast</span><span class="mp">72.7% — 27.3%</span></td>
+        <td rowspan="2"><span class="mw">🇲🇽 Mexico</span><span class="ml">🇨🇭 Switzerland</span><span class="mp">57.7% — 42.3%</span></td>
+        <td rowspan="4"><span class="mw">🇲🇽 Mexico</span><span class="ml">🇺🇸 United States</span><span class="mp">54.1% — 45.9%</span></td>
+        <td rowspan="8"><span class="mw">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span><span class="ml">🇲🇽 Mexico</span><span class="mp">52.4% — 47.6%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇨🇭 Switzerland</span><span class="ml">🇪🇬 Egypt</span><span class="mp">59.4% — 40.6%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇺🇸 United States</span><span class="ml">🇦🇹 Austria</span><span class="mp">63.0% — 37.0%</span></td>
+        <td rowspan="2"><span class="mw">🇺🇸 United States</span><span class="ml">🇩🇪 Germany</span><span class="mp">51.4% — 48.6%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇩🇪 Germany</span><span class="ml">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</span><span class="mp">75.0% — 25.0%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇧🇪 Belgium</span><span class="ml">🇨🇿 Czechia</span><span class="mp">76.1% — 23.9%</span></td>
+        <td rowspan="2"><span class="mw">🇧🇪 Belgium</span><span class="ml">🇫🇷 France</span><span class="mp">50.4% — 49.6%</span></td>
+        <td rowspan="4"><span class="mw">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span><span class="ml">🇧🇪 Belgium</span><span class="mp">51.4% — 48.6%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇫🇷 France</span><span class="ml">🇵🇾 Paraguay</span><span class="mp">76.5% — 23.5%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🇵🇹 Portugal</span><span class="ml">🇳🇴 Norway</span><span class="mp">64.6% — 35.4%</span></td>
+        <td rowspan="2"><span class="mw">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span><span class="ml">🇵🇹 Portugal</span><span class="mp">51.5% — 48.5%</span></td>
+      </tr>
+      <tr>
+        <td><span class="mw">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span><span class="ml">🇺🇿 Uzbekistan</span><span class="mp">83.4% — 16.6%</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final-section">
+    <div class="big-trophy">🏆</div>
+    <h3>2026 World Cup Champion</h3>
+    <h2>🇳🇱 Netherlands</h2>
+    <p>def. 🏴󠁧󠁢󠁥󠁮󠁧󠁿 England &nbsp;·&nbsp; 55.3% — 44.7%</p>
+  </div>
+
+</div>
+</body>
+</html>
