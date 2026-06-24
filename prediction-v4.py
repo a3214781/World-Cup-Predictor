@@ -176,4 +176,3 @@ neutral_input = input("Neutral ground? (y/n): ").lower() == 'y'
 predict_match(home_team_input, away_team_input, neutral_input)
   
 # python3 prediction-v4.py
-# KGAT_b4bb4a3970b94af8d610d313c5b047aa

@@ -121,4 +121,3 @@ print(metrics.accuracy_score(y_test, y_pred))
 
   
 # python3 prediction-v3.py
-# KGAT_b4bb4a3970b94af8d610d313c5b047aa
