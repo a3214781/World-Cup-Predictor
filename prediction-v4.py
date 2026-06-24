@@ -170,9 +170,15 @@ def predict_match(home_team, away_team, neutral=False):
     match_scaled = scaler.transform(match)
     probabilities = logreg.predict_proba(match_scaled)
     
-    print(home_team, ' win probability: ', round(probabilities[0][1] * 100, 1), '%')
-    print(away_team, ' win probability: ', round(probabilities[0][0] * 100, 1), '%')
+    # print(home_team, ' win probability: ', round(probabilities[0][1] * 100, 1), '%')
+    # print(away_team, ' win probability: ', round(probabilities[0][0] * 100, 1), '%')
+    
+    home_probability = probabilities[0][1] * 100
+    away_probability = probabilities[0][0] * 100
+    
+    return home_probability, away_probability
 
+# Array of all groups at the 2026 WC
 wc_groups = {
     "A": ["Mexico", "South Africa", "South Korea", "Czechia"],
     "B": ["Canada", "Switzerland", "Qatar", "Bosnia and Herzegovina"],
@@ -188,21 +194,71 @@ wc_groups = {
     "L": ["England", "Croatia", "Ghana", "Panama"],
 }
 
-# Generate all 6 matches per group (round robin)
+# Generate all 6 matches per group (round robin - each team plays every other team once)
 wc_matches = []
+# Loop through all groups and generate every unique pair of teams
 for group, teams in wc_groups.items():
     for i in range(len(teams)):
         for j in range(i + 1, len(teams)):
+            # Append (home, away, neutral, group) for each matchup
             wc_matches.append((teams[i], teams[j], True, group))
-            
+
+# Print and predict every group stage match
+     
+# Dictionary to track points for every team, starting at 0
+points = {team: 0 for group in wc_groups.values() for team in group}
+total_probability = {team: 0 for group in wc_groups.values() for team in group}
+
+# Loop through all 72 matches and assign points based on predicted winner
 for home, away, neutral, group in wc_matches:
-    print(f"Group {group}: {home} vs {away}")
+    try:
+        # Get win probabilities for each team
+        home_prob, away_prob = predict_match(home, away, neutral)
+        # Adding total_probibility to each home and away team
+        total_probability[home] += home_prob
+        total_probability[away] += away_prob
+        # Award 3 points to the predicted winner
+        if home_prob > away_prob:
+            points[home] += 3
+        else:
+            points[away] += 3
+    except Exception as e:
+        print(f"Error: {home} vs {away} — {e}")
+        
+# Group X: Home vs Away
+# Home win probability:  X%
+# Away win probability:  Y%
+
+for home, away, neutral, group in wc_matches:
+    # print(f"Group {group}: {home} vs {away}")
     try:
         predict_match(home, away, neutral)
         print()
     except Exception as e:
         print(f"Error: {e}")
         print()
+
+# Function used to return the points tally for each team (used to sort teams in their group)        
+def get_points(team):
+    return points[team]
+
+def get_prob_total(team):
+    return total_probability[team]
+# Print final group tables
+
+third_place = []
+for group, teams in wc_groups.items():
+    print(f"\n--- Group {group} ---")
+    # Sort teams in this group by their points (highest first)
+    sorted_teams = sorted(teams, key=get_points, reverse=True)
+    for i, team in enumerate(sorted_teams):
+        print(f"{i+1}. {team} — {points[team]} pts")
+        # add all 3rd place teams to a list to find top 8 to go through to the knockout stage
+    third_place.append(sorted_teams[2])
+    
+third_place = sorted(third_place, key=get_prob_total, reverse=True)
+
+print(third_place)
 '''
 while True:
     home_team_input = input("Enter home team (or Q to quit): ")
