@@ -173,10 +173,12 @@ def predict_match(home_team, away_team, neutral=False):
     print(home_team, ' win probability: ', round(probabilities[0][1] * 100, 1), '%')
     print(away_team, ' win probability: ', round(probabilities[0][0] * 100, 1), '%')
     
-# Inputs to search home and away team
-home_team_input = input("Enter home team: ")
-away_team_input = input("Enter away team: ")
-neutral_input = input("Neutral ground? (y/n): ").lower() == 'y'
-predict_match(home_team_input, away_team_input, neutral_input)
-  
+while True:
+    home_team_input = input("Enter home team (or Q to quit): ")
+    if home_team_input.upper() == 'Q':
+        break
+    away_team_input = input("Enter away team: ")
+    neutral_input = input("Neutral ground? (y/n): ").lower() == 'y'
+    predict_match(home_team_input, away_team_input, neutral_input)
+    print()
 # python3 prediction-v4.py
