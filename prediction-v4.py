@@ -173,23 +173,36 @@ def predict_match(home_team, away_team, neutral=False):
     print(home_team, ' win probability: ', round(probabilities[0][1] * 100, 1), '%')
     print(away_team, ' win probability: ', round(probabilities[0][0] * 100, 1), '%')
 
-wc_matches = [
-    ("United States", "Paraguay", True),
-    ("Australia", "Turkey", True),
-    ("United States", "Australia", True),
-    ("Paraguay", "Turkey", True),
-    ("United States", "Turkey", True),
-    ("Paraguay", "Australia", True)
-]
+wc_groups = {
+    "A": ["Mexico", "South Africa", "South Korea", "Czechia"],
+    "B": ["Canada", "Switzerland", "Qatar", "Bosnia and Herzegovina"],
+    "C": ["Brazil", "Morocco", "Scotland", "Haiti"],
+    "D": ["United States", "Paraguay", "Australia", "Turkey"],
+    "E": ["Germany", "Curaçao", "Ivory Coast", "Ecuador"],
+    "F": ["Netherlands", "Japan", "Tunisia", "Sweden"],
+    "G": ["Belgium", "Egypt", "Iran", "New Zealand"],
+    "H": ["Spain", "Cape Verde", "Saudi Arabia", "Uruguay"],
+    "I": ["France", "Senegal", "Norway", "Iraq"],
+    "J": ["Argentina", "Algeria", "Austria", "Jordan"],
+    "K": ["Portugal", "Colombia", "Uzbekistan", "DR Congo"],
+    "L": ["England", "Croatia", "Ghana", "Panama"],
+}
 
-for home, away, neutral in wc_matches:
+# Generate all 6 matches per group (round robin)
+wc_matches = []
+for group, teams in wc_groups.items():
+    for i in range(len(teams)):
+        for j in range(i + 1, len(teams)):
+            wc_matches.append((teams[i], teams[j], True, group))
+            
+for home, away, neutral, group in wc_matches:
+    print(f"Group {group}: {home} vs {away}")
     try:
         predict_match(home, away, neutral)
         print()
     except Exception as e:
-        print(f"Error: {home} vs {away} — {e}")
+        print(f"Error: {e}")
         print()
-          
 '''
 while True:
     home_team_input = input("Enter home team (or Q to quit): ")
