@@ -172,7 +172,25 @@ def predict_match(home_team, away_team, neutral=False):
     
     print(home_team, ' win probability: ', round(probabilities[0][1] * 100, 1), '%')
     print(away_team, ' win probability: ', round(probabilities[0][0] * 100, 1), '%')
-    
+
+wc_matches = [
+    ("United States", "Paraguay", True),
+    ("Australia", "Turkey", True),
+    ("United States", "Australia", True),
+    ("Paraguay", "Turkey", True),
+    ("United States", "Turkey", True),
+    ("Paraguay", "Australia", True)
+]
+
+for home, away, neutral in wc_matches:
+    try:
+        predict_match(home, away, neutral)
+        print()
+    except Exception as e:
+        print(f"Error: {home} vs {away} — {e}")
+        print()
+          
+'''
 while True:
     home_team_input = input("Enter home team (or Q to quit): ")
     if home_team_input.upper() == 'Q':
@@ -181,4 +199,6 @@ while True:
     neutral_input = input("Neutral ground? (y/n): ").lower() == 'y'
     predict_match(home_team_input, away_team_input, neutral_input)
     print()
+    
+'''
 # python3 prediction-v4.py
